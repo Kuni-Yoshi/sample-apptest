@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/THOUZER_HW/" + type_and_serial + "/event/app");
+        }
+        function subscribeParse(message){
+            const from_json = JSON.parse(message.payloadString);
+            if(from_json.data != null && from_json.data.application == "highway" && from_json.data.status == "exit_error" && from_json.data.event == "badMark" && from_json.data.data.mark.code != null){
+                document.getElementById("window").style.backgroundColor = "#FF4040";
+                document.getElementById("pop-up").checked = true;
+                document.getElementById("window").innerHTML = "<br><span style=\"font-size:150%;font-weight:bold;\">code: " + from_json.data.data.mark.code + "</span><br><span style=\"font-size:200%;font-weight:bold;\">" + from_json.data.data.mark.name + "</span><br><span style=\"font-size:120%;font-weight:bold;\">score: " + from_json.data.data.mark.score + "</span><br><br><hr><br>" + message.payloadString;
+            }
+        }
+    </script>
+</head>
+<body style="height:100%;margin:0;" onload="tryConnectFirst();">
+<div id="status" class="area" style="height:8%;font-size:7vmin;">Connecting...</div>
+<div class="area" style="height:20%;font-size:15vmin;color:red;"><div class="button" onclick="publishCmd('')" ><span class="text">PLABACK STOP</span></div></div>
+<div class="area" style="height:36%;width:60%;font-size:15vmin;background-color:rgba(127, 255, 212, 0.31);color:blue"><div class="button" onclick="publishCmdParam('app-memorytrace','--map B101')"><span class="text">ROUTE NAME</span></div></div>
+<div class="area" style="height:36%;width:40%;font-size:15vmin;background-color:rgba(127, 255, 212, 0.31);color:green"><div class="button" onclick="publishCmdParam('app-memorytrace','--map B102')"><span class="text">ルート名</span></div></div>
+<div class="area" style="height:36%;width:40%;font-size:15vmin;background-color:rgba(127, 255, 212, 0.31);color:rgb(195, 107, 0)"><div class="button" onclick="publishCmdParam('app-memorytrace','--map B103')"><span class="text">路線名</span></div></div>
+<div class="area" style="height:36%;width:60%;font-size:15vmin;background-color:rgba(127, 255, 212, 0.31);color:rgb(117, 41, 117)"><div class="button" onclick="publishCmdParam('app-memorytrace','--map B104')"><span class="text">Nombre de la Ruta </span></div></div>
+
+<input type="checkbox" id="pop-up"><label class="overlay" for="pop-up"><label class="window" id="window" for="pop-up"></label></label>
+</body>
+</html>
