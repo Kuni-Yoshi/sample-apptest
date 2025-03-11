@@ -113,19 +113,40 @@
     <a href="DNE5.1.7.1.0-v20240901/additional/memorytraceIO76-battery-status345.html">One screen for MemoryTrace and check IO345 and battery(DNE5.1.7.1.0 or later)</a><br>
     <a href="DNE5.1.7.1.0-v20240901/additional/app-memorytrace-simple-horizotal.html">Rotate app-memorytrace-simple to horizonal.(DNE5.1.7.1.0 or later)</a><br>
     <a href="DNE5.1.7.1.0-v20240901/additional/MultipleFrameSample.html">Multiple apps on the same screen sample. Need to edit default.css file.</a><br>
-    <a href="DNE5.1.7.1.0-v20240901/additional/app-memorytrace-4buttons.html">4 buttons route selection with customized button name.</a><br>
+    <a href="DNE5.1.7.1.0-v20240901/additional/MultipleFrameSample.html">Multiple apps on the same screen sample. Need to edit default.css file.(DNE5.1.7.1.0 or later)</a><br>
+    <a href="DNE5.1.7.1.0-v20240901/additional/app-memorytrace-4buttons.html">4 buttons route selection with customized button name.(DNE5.1.7.1.0 or later)</a><br>
 
 
     <br>
     [notice]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
-        <li>The autostart app will activated after 10 seconds of the DNE boot up. Please place html file to /data/html/autostart.html.</li>
-        <li>autostart.html will be load by chromium version 43.0.2357.130 Ubuntu 14.10.</li>
-        <li>If you are using samples not on DNE4.8 but DNE5 or later, please change the "../app/style.css" reference to "../default.css".</li>
+        <li>If you are using samples not on DNE4.8.* but DNE5.*.* or later, please change the "../app/style.css" reference to "../default.css".</li>
     </ul>
+    <br>
+
+    [how to use autostart apps]<br>
+    <ul style="margin-top:3px;margin-bottom:3px;">
+        <li>Html/Javascript application in a specific directory of the DNE, will be run automatically in 10 to 20 seconds after the DNE boots up.</li>
+        <li>Please place html files in /data/html/ and name the file "autostart.html".</li>
+        <li>This autostart apps cannot be displayed and cannot use screen operation.
+        <li>Some Additional Samples are designated as usable for autostart when renamed. In this case, "useBeep" must be set to false.</li>
+        <li>On DNE5.3.0.0.0 or later, multiple autostart apps can be started at the same time. Name the files "autostart*****.html".</li>
+        <li>Execution environment of autostart.html will be chromium version 43.0.2357.130 Ubuntu 14.10.</li>
+    </ul>
+
     <hr>
 
     <div style="font-size:160%;margin-bottom:5px;"><b>Pre-Installed Samples/API release note</b></div>
+
+    <b><a href="DNE5.3.0.0.0-v20250310/app">DNE5.3.0.0.0-v20250310</a></b><br>
+    [What's New for MQTT API and Web bases UI application]<br>
+    <ul style="margin-top:3px;margin-bottom:3px;">
+        <li>Added two simple samples: Combination-Simple-Button and Test-Logging.</li>
+        <li>"MT_suspend" has been renamed to "MT_resume" in the app_status topic, while the content remains unchanged.</li>
+        <li>"#successHold" has been renamed to "#successSuspend" in the event/app topic for "Memorized Playback stop" and "Memorized Playback hold".</li>
+        <li>"undefined" has been renamed to "interrupted" in the event/app topic in memorytrace.</li>
+    </ul>
+    <br>
 
     <b><a href="DNE5.1.7.1.0-v20240901/app">DNE5.1.7.1.0-v20240901</a></b> <span style="color:#FF4444">Not release/install version for Thozuer E-series</span><br>
     [What's New for MQTT API and Web bases UI application]<br>
@@ -133,6 +154,7 @@
         <li>All font size specifications have been changed to include both vmin and dvmin.</li>
     </ul>
     <br>
+
     <b><a href="DNE5.1.1.4.0-v20240626/app">DNE5.1.1.4.0-v20240626</a></b> <span style="color:#FF4444">Not release/install version for Thozuer E-series</span> (more stable than DNE5.1.1.*.*)<br>
     [What's New for MQTT API and Web bases UI application]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
@@ -144,6 +166,7 @@
         <li>Tweaked drop-down lists for iPad.</li>
     </ul>
     <br>
+
     <b><a href="DNE5.0.1.1.0-v20240301/app">DNE5.0.1.1.0-v20240301</a></b> <span style="color:#FF4444">Not release/install version for Thozuer E-series</span> (more stable than DNE5.0.1.0.0-v20240225)<br>
     [What's New for MQTT API and Web bases UI application]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
@@ -151,6 +174,7 @@
         <li>app-userInput-stick.html solves the problem of models (such as Mecharon) where the speed mode is reset by the joystick manual function.</li>
     </ul>
     <br>
+
     <b><a href="DNE5.0.0.0.0-v20240115/app">DNE5.0.0.0.0-v20240115</a></b> <span style="color:#FF4444">Not release/install version for Thozuer E-series</span><br>
     [What's New for MQTT API and Web bases UI application]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
@@ -165,6 +189,7 @@
         <li>sample application UI has been renewd.</li>
     </ul>
     <br>
+
     <b><a href="DNE4.8.1.0.1-v20240111/app">DNE4.8.1.0.1-v20240111</a></b><br>
     [What's New for MQTT API and Web bases UI application]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
@@ -174,6 +199,7 @@
             However, DNE's MQTT client is not supported SSL, so please use a broker that supports both TCP and SSL connections.</li>
     </ul>
     <br>
+
     <b><a href="DNE4.8.0.4.4-v20230406/app">DNE4.8.0.4.4-v20230406</a></b><br>
     [notice]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
@@ -181,6 +207,7 @@
         <li>This page is using <span id="protocol"></span>.</li>
     </ul>
     <br>
+
     <hr>
     Doog Inc.
 </body>
