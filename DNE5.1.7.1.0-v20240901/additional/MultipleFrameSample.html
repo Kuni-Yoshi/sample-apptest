@@ -1,19 +1,55 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <title>Frame Sample</title>
-  <link rel="stylesheet" href="frame.css">
+  <style type="text/css">
+  <!--
+    .content{
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      -ms-overflow-style: none; //IE and Edge
+      scrollbar-width: none; //Firefox
+    }
+    .content::-webkit-scrollbar{
+      display:none; //Chrome and Safari
+    }
+    .base {
+      display: flex;
+      flex-direction: row;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    .sub {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    iframe {
+      width: 100%;
+      border: none;
+      margin: 0;
+      padding: 0;
+      flex-grow: 1;
+    }
+  -->
+  </style>
 </head>
-<body>
+<body style="height:100%;margin:0;overflow:hidden;">
   <div class="base">
-    <div class="class1">
-      <iframe src="../index.html" width="100%" height="70%"></iframe>
-      <iframe src="../index.html" width="100%" height="30%"></iframe>
+    <div class="sub" style="width:40%;">
+      <iframe src="../app/check-status345.html" style="height:70%;"></iframe>
+      <iframe src="../app/check-battery.html" style="height:30%;"></iframe>
     </div>
-    <div class="class2">
-      <iframe src="../index.html" width="100%" height="60%"></iframe>
-      <iframe src="../index.html" width="100%" height="40%"></iframe>
+    <div class="sub" style="width:60%;">
+      <iframe src="../app/app-userInput-stick.html" style="height:60%;"></iframe>
+      <iframe src="../app/app-karugamo.html" style="height:40%;"></iframe>
     </div>
   </div>
 </body>
