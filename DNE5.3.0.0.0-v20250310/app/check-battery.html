@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/battery");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/battery" && json.gauge != null){
+                var gauge = Number(json.gauge);
+                document.getElementById("BA10").style.backgroundColor = (gauge >= 10)?"#00FF00":"#FFFFFF";
+                document.getElementById("BA9").style.backgroundColor = (gauge >= 9)?"#00FF00":"#FFFFFF";
+                document.getElementById("BA8").style.backgroundColor = (gauge >= 8)?"#00FF00":"#FFFFFF";
+                document.getElementById("BA7").style.backgroundColor = (gauge >= 7)?"#FFD700":"#FFFFFF";
+                document.getElementById("BA6").style.backgroundColor = (gauge >= 6)?"#FFD700":"#FFFFFF";
+                document.getElementById("BA5").style.backgroundColor = (gauge >= 5)?"#FFD700":"#FFFFFF";
+                document.getElementById("BA4").style.backgroundColor = (gauge >= 4)?"#FFD700":"#FFFFFF";
+                document.getElementById("BA3").style.backgroundColor = (gauge >= 3)?"#FF0000":"#FFFFFF";
+                document.getElementById("BA2").style.backgroundColor = (gauge >= 2)?"#FF0000":"#FFFFFF";
+                document.getElementById("BA1").style.backgroundColor = (gauge >= 1)?"#FF0000":"#FFFFFF";
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA10"><span class="text">10_GREEN</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA9"><span class="text">9_GREEN</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA8"><span class="text">8_GREEN</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA7"><span class="text">7_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA6"><span class="text">6_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA5"><span class="text">5_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA4"><span class="text">4_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA3"><span class="text">3_RED</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA2"><span class="text">2_RED</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA1"><span class="text">1_RED</span></div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/app_status");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/app_status" && json.MT_resume != null && json.app != null && json.MT_teach != null){
+                if(json.app.indexOf("./bin/app-memorytrace") == 0){
+                    document.getElementById("memorize_t").innerText = "Stop and Cancel";
+                    document.getElementById("play_t").innerText = "Playback Stop";
+                    document.getElementById("loop_t").innerText = "Playback Stop";
+                    document.getElementById("play").setAttribute("onclick", "stop()");
+                    document.getElementById("loop").setAttribute("onclick", "stop()");
+                }else{
+                    document.getElementById("memorize_t").innerText = "Memorize (IO76)";
+                    document.getElementById("play_t").innerText = "Play (IO76)";
+                    document.getElementById("loop_t").innerText = "Loop (IO76)";
+                    document.getElementById("play").setAttribute("onclick", "play()");
+                    document.getElementById("loop").setAttribute("onclick", "loop()");
+                }
+                if(json.MT_teach) document.getElementById("memorize_t").innerText = "Memorize Save";
+                if(json.MT_resume){
+                    document.getElementById("memorize_t").innerText = "Cancel";
+                    document.getElementById("play_t").innerText = "Play Resume";
+                    document.getElementById("loop_t").innerText = "Play Resume";
+                }
+            }
+        }
+        function play(){ publishCmdParam('app-memorytrace', '--map IO76'); }
+        function loop(){ publishCmdParam('app-memorytrace', '--map IO76 --loop'); }
+        function stop(){ publishCmd(''); }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:30%;font-size:10vmin;font-size:10dvmin;"><div class="button" id="memorize" onclick="publishCmdParam('memory-start-save', '--map IO76')"><span class="text" id="memorize_t">Memorize (IO76)</span></div></div>
+<div class="area" style="height:31%;font-size:10vmin;font-size:10dvmin;"><div class="button" id="play" onclick="play()"><span class="text" id="play_t">Play (IO76)</span></div></div>
+<div class="area" style="height:31%;font-size:10vmin;font-size:10dvmin;"><div class="button" id="loop" onclick="loop()"><span class="text" id="loop_t">Loop (IO76)</span></div></div>
+</body>
+</html>

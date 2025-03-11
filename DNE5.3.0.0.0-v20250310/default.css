@@ -1,0 +1,41 @@
+.content{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    -ms-overflow-style: none; //IE and Edge
+    scrollbar-width: none; //Firefox
+}
+.content::-webkit-scrollbar{
+    display:none; //Chrome and Safari
+}
+
+.area {
+    width: 100%;
+    float: left;
+    padding: 2px;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.button {
+    height: 100%;
+    width: 100%;
+    float: left;
+    cursor: pointer;
+    position: relative;
+    border: 2px solid #232323;
+    border-radius: 5vmin;
+    border-radius: 5dvmin;
+    box-sizing: border-box;
+}
+.button:active { background-color: #FFF100; }
+.text {
+    white-space: nowrap;
+    position: absolute;
+    top: 50%;
+    left :50%;
+    transform: translate(-50%,-50%);
+}
