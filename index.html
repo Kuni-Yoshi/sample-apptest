@@ -126,7 +126,7 @@
     [how to use autostart apps]<br>
     <ul style="margin-top:3px;margin-bottom:3px;">
         <li>Html/Javascript application in a specific directory of the DNE, will be run automatically in 10 to 20 seconds after the DNE boots up.</li>
-        <li>Please place html files in /data/html/ and name the file "autostart.html".</li>
+        <li>Please place html files in /data/html and name the file "autostart.html".</li>
         <li>This autostart apps cannot be displayed and cannot use screen operation.
         <li>Some Additional Samples are designated as usable for autostart when renamed. In this case, "useBeep" must be set to false.</li>
         <li>On DNE5.3.0.0.0 or later, multiple autostart apps can be started at the same time. Name the files "autostart*****.html".</li>
@@ -136,6 +136,8 @@
     <hr>
 
     <div style="font-size:160%;margin-bottom:5px;"><b>Pre-Installed Samples/API release note</b></div>
+    <span style="color:#FF4444">*** The source code below should not be placed in the robot's /data/html directory. ***</span><br>
+    <br>
 
     <b><a href="DNE5.3.0.0.0-v20250310/app">DNE5.3.0.0.0-v20250310</a></b><br>
     [What's New for MQTT API and Web bases UI application]<br>
