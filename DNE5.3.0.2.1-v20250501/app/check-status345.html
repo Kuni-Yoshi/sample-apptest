@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/io12");
+            subscribe("0/THOUZER_HW/" + type_and_serial + "/indicator/app");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/io12" && json.level != null){
+                document.getElementById("IO5").style.backgroundColor = (json.level.charAt(6) == '1')?"#FF0000":"";
+                document.getElementById("IO4").style.backgroundColor = (json.level.charAt(7) == '1')?"#FFF100":"";
+                document.getElementById("IO3").style.backgroundColor = (json.level.charAt(8) == '1')?"#00FF00":"";
+            }
+            if(topic == "0/THOUZER_HW/" + type_and_serial + "/indicator/app" && json.data != null && json.data.type != null && json.time != null){
+                var text = json.data.type;
+                if(json.data.id != null || json.data.number != null) text += " ";
+                if(json.data.id != null) text += "(id=" + json.data.id + ")";
+                if(json.data.number != null) text += "(r=" + json.data.number + ")";
+                document.getElementById("details").innerHTML = "<span style=\"font-weight:bold;background-color:" + (text.indexOf("error[")==0?"#FF3030":text.indexOf("alert:")==0?"#FF7070":text.indexOf("alarm:")==0?"#FFC0C0":"#FFFF7F") + ";\">" + text + "</span><br> at " + json.time + "<hr>" + document.getElementById("details").innerHTML;
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:12%;font-size:6vmin;font-size:6dvmin;position:relative;border:2px solid #232323;" id="IO5"><span class="text">IO5-Red</span></div>
+<div class="area" style="height:12%;font-size:6vmin;font-size:6dvmin;position:relative;border:2px solid #232323;" id="IO4"><span class="text">IO4-Yellow</span></div>
+<div class="area" style="height:12%;font-size:6vmin;font-size:6dvmin;position:relative;border:2px solid #232323;" id="IO3"><span class="text">IO3-Green</span></div>
+
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;"><div class="button" onclick="publishCmd('#last_indicator')"><span class="text">#last_indicator</span></div></div>
+
+<div class="area" style="overflow-y:scroll;font-size:3vmin;font-size:3dvmin;width:100%;height:47%;" id="details"><br><b>*** Details of Indicator topic ***</b></div>
+
+</body>
+</html>

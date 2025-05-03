@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){ }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:12%;font-size:7vmin;font-size:7dvmin;"><div class="button" onclick="publishCmd('')"><span class="text">Stop</span></div></div>
+<div class="area" style="height:20%;font-size:7vmin;font-size:7dvmin;"><div class="button" onclick="publishCmdParam('combination', '--route B101++LT')"><span class="text">B101++LT</span></div></div>
+<div class="area" style="height:20%;font-size:7vmin;font-size:7dvmin;"><div class="button" onclick="publishCmdParam('combination', '--route LT++B101++LT')"><span class="text">LT++B101++LT</span></div></div>
+<div class="area" style="height:20%;font-size:7vmin;font-size:7dvmin;"><div class="button" onclick="publishCmdParam('combination', '--route B101++LT++B102')"><span class="text">B101++LT++B102</span></div></div>
+<div class="area" style="height:20%;font-size:7vmin;font-size:7dvmin;"><div class="button" onclick="publishCmdParam('combination', '--route 101++B101++102++B102')"><span class="text">101++B101++102++B102</span></div></div>
+</body>
+</html>

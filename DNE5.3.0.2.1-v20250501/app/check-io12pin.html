@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/io12");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/io12" && json.level != null){
+                document.getElementById("IO7").style.backgroundColor = (json.level.charAt(4) == '1')?"#AFEEEE":"#DDA0DD";
+                document.getElementById("IO6").style.backgroundColor = (json.level.charAt(5) == '1')?"#AFEEEE":"#DDA0DD";
+                document.getElementById("IO5").style.backgroundColor = (json.level.charAt(6) == '1')?"#FF0000":"";
+                document.getElementById("IO4").style.backgroundColor = (json.level.charAt(7) == '1')?"#FFF100":"";
+                document.getElementById("IO3").style.backgroundColor = (json.level.charAt(8) == '1')?"#00FF00":"";
+                document.getElementById("IO2").style.backgroundColor = (json.level.charAt(9) == '1')?"#AFEEEE":"#DDA0DD";
+                document.getElementById("IO1").style.backgroundColor = (json.level.charAt(10) == '1')?"#FFA500":"#B0B0B0";
+                document.getElementById("IO0").style.backgroundColor = (json.level.charAt(11) == '1')?"#FFA500":"#B0B0B0";
+                document.getElementById("0R3").style.backgroundColor = (json.level.charAt(3) == '1')?"#AFEEEE":"#DDA0DD";
+                document.getElementById("0R4").style.backgroundColor = (json.level.charAt(2) == '1')?"#AFEEEE":"#DDA0DD";
+                document.getElementById("1L3").style.backgroundColor = (json.level.charAt(1) == '1')?"#AFEEEE":"#DDA0DD";
+                document.getElementById("1L4").style.backgroundColor = (json.level.charAt(0) == '1')?"#AFEEEE":"#DDA0DD";
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO7"><span class="text">IO7-Input</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO6"><span class="text">IO6-Input</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO5"><span class="text">IO5-Output-Red</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO4"><span class="text">IO4-Output-Yellow</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO3"><span class="text">IO3-Output-Green</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO2"><span class="text">IO2-Input</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO1"><span class="text">IO1-External</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="IO0"><span class="text">IO0-External</span></div>
+
+<div class="area" style="height:20%;width:25%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="0R3"><span class="text">0R3</span></div>
+<div class="area" style="height:20%;width:25%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="0R4"><span class="text">0R4</span></div>
+<div class="area" style="height:20%;width:25%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="1L3"><span class="text">1L3</span></div>
+<div class="area" style="height:20%;width:25%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="1L4"><span class="text">1L4</span></div>
+
+</body>
+</html>

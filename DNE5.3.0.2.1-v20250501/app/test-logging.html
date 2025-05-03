@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            if(retry != "") subscribe(retry);
+        }
+
+        var containVersion = false;
+        var defaultMessage = 'Please push button.<br><br>NOT contain default subscribed topic.<br> 0/WHISPERER/+/version <input id="contain" type="checkbox">contain</check>';
+        var retry = "";
+        var count = 0, text = "";
+        function init(){
+            document.getElementById("message").innerHTML = defaultMessage;
+            document.getElementById("topic").value = "0/THOUZER_HW/" + type_and_serial + "/#";
+        }
+        function set(){
+            if(document.getElementById("set").value == "set"){
+                document.getElementById("set").value = "stop";
+                containVersion = document.getElementById("contain").checked;
+                document.getElementById("message").innerHTML = "Please wait.";
+                count = 0;
+                text = "";
+                subscribe(retry = document.getElementById("topic").value);
+            }else{
+                retry = "";
+                document.getElementById("set").value = "set";
+                containVersion = false;
+                document.getElementById("message").innerHTML = defaultMessage + '<hr><div style="color:#FF0000">*** stop ***</div><hr>' + document.getElementById("message").innerHTML;
+                unsubscribe(document.getElementById("topic").value);
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(new Blob([text], {type: 'text/plain'}));
+                link.download = document.getElementById("topic").value + ".txt";
+                link.click();
+            }
+        }
+        function subscribeParse(message){
+            const topic = message.destinationName;
+            const json_text = message.payloadString;
+            if(containVersion == false && message.destinationName.match(new RegExp("0/WHISPERER/.+/version")) != null) return;
+            const date = new Date();
+            date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+            text += date.toISOString().replace('T', ' ').substring(0, 19) + " " + json_text.replaceAll("\r","").replaceAll("\n","") + "\r\n";
+            ++count;
+            document.getElementById("message").innerHTML = "<span style='font-size:8vmin;font-size:8dvmin;'>" + count + "</span>[count]<br>" + encodeURIComponent(text).replace(/%../g,"x").length + "[byte]";
+        }
+    </script>
+</head>
+<body style="height:100%;width:100%;margin:0;" onload="tryConnectFirst();init();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<input id="topic" type="text" style="height:40px;font-size:15px;width:calc(100% - 80px);box-sizing:border-box;"><input style="height:40px;font-size:20px;width:80px;box-sizing:border-box;" type="button" id="set" value="set" onclick="set();">
+<div id="message" style="overflow-y:scroll;font-size:4vmin;font-size:4dvmin;width:100%;"></div>
+</body>
+</html>

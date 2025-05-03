@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/speedmode");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/speedmode" && json.mode != null){
+                document.getElementById("m0").style.backgroundColor = (json.mode == 0)?"#FFF100":"#FFFFFF";
+                document.getElementById("m1").style.backgroundColor = (json.mode == 1)?"#FFF100":"#FFFFFF";
+                document.getElementById("m2").style.backgroundColor = (json.mode == 2)?"#FFF100":"#FFFFFF";
+                document.getElementById("m3").style.backgroundColor = (json.mode == 3)?"#FFF100":"#FFFFFF";
+                document.getElementById("m4").style.backgroundColor = (json.mode == 4)?"#FFF100":"#FFFFFF";
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:12%;font-size:6vmin;font-size:6dvmin;">
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_0');" id="m0"><span class="text">0</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_1');" id="m1"><span class="text">1</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_2');" id="m2"><span class="text">2</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_3');" id="m3"><span class="text">3</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_4');" id="m4"><span class="text">4</span></div>
+</div>
+<div class="area" style="height:30%;font-size:12vmin;font-size:12dvmin;"><div class="button" onclick="publishCmd('app-karugamo')"><span class="text">Follow-Me</span></div></div>
+<div class="area" style="height:50%;font-size:12vmin;font-size:12dvmin;"><div class="button" onclick="publishCmd('')"><span class="text">Stop</span></div></div>
+</body>
+</html>

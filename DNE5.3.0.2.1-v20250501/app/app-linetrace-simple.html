@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){ }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:15%;font-size:7vmin;font-size:7dvmin;">          <div class="button" onclick="publishCmd('')"><span class="text">Stop</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(101)"><span class="text">Go_101</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(201)"><span class="text">Go_201</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(102)"><span class="text">Go_102</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(202)"><span class="text">Go_202</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(103)"><span class="text">Go_103</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(203)"><span class="text">Go_203</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(104)"><span class="text">Go_104</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(204)"><span class="text">Go_204</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(105)"><span class="text">Go_105</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(205)"><span class="text">Go_205</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(106)"><span class="text">Go_106</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(206)"><span class="text">Go_206</span></div></div>
+
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(107)"><span class="text">Go_107</span></div></div>
+<div class="area" style="height:11%;font-size:7vmin;font-size:7dvmin;width:50%;"><div class="button" onclick="publishHW(207)"><span class="text">Go_207</span></div></div>
+</body>
+</html>

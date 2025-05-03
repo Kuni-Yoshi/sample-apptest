@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/io12");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/io12" && json.level != null){
+                document.getElementById("IO1").style.backgroundColor = (json.level.charAt(10) == '1')?"#FFF100":"";
+                document.getElementById("IO0").style.backgroundColor = (json.level.charAt(11) == '1')?"#FFF100":"";
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:46%;font-size:25vmin;font-size:25dvmin;"><div class="button" onclick="publishCmd('#ext1_toggle')" id="IO1"><span class="text">IO1</span></div></div>
+<div class="area" style="height:46%;font-size:25vmin;font-size:25dvmin;"><div class="button" onclick="publishCmd('#ext0_toggle')" id="IO0"><span class="text">IO0</span></div></div>
+</body>
+</html>
