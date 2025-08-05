@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        var time = new Date();
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/speedmode");
+            subscribe("0/THOUZER_HW/" + type_and_serial + "/status/app");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/version") time = new Date();
+            if(topic == "0/WHISPERER/" + type_and_serial + "/speedmode" && json.mode != null){
+                document.getElementById("m0").style.backgroundColor = (json.mode == 0)?"#FFF100":"#FFFFFF";
+                document.getElementById("m1").style.backgroundColor = (json.mode == 1)?"#FFF100":"#FFFFFF";
+                document.getElementById("m2").style.backgroundColor = (json.mode == 2)?"#FFF100":"#FFFFFF";
+                document.getElementById("m3").style.backgroundColor = (json.mode == 3)?"#FFF100":"#FFFFFF";
+                document.getElementById("m4").style.backgroundColor = (json.mode == 4)?"#FFF100":"#FFFFFF";
+            }
+            if(topic == "0/THOUZER_HW/" + type_and_serial + "/status/app" && json.app != null){
+                if(changedApplication == 0 && json.app.indexOf("./bin/app-userInput") != 0) changedApplication = 1;
+                if(changedApplication == 1 && json.app.indexOf("./bin/app-userInput") == 0) changedApplication = 0;
+            }
+        }
+        var reverse = false;
+        function load(){
+            if(document.location.search.length > 1){
+                var array = document.location.search.substring(1).split('&');
+                for(var str of array) if(str == "advanced"){
+                    document.getElementById("button_normal").style.visibility = "visible";
+                    document.getElementById("button_reverse").style.visibility = "visible";
+                    document.getElementById("text_front").style.visibility = "visible";
+                    document.getElementById("text_rear").style.visibility = "visible";
+                    document.getElementById("text_left").style.visibility = "visible";
+                    document.getElementById("text_right").style.visibility = "visible";
+                    document.getElementById("control_init").style.backgroundColor = "#FFFFFF";
+                }
+            }
+        }
+        function revFunc(flag){
+            reverse = flag;
+            document.getElementById("control").style.backgroundColor = reverse?"#FFDDCC":"#FFFFFF";
+            var textF = document.getElementById("textF");
+            var textR = document.getElementById("textR");
+            textF.innerText = reverse?"Rear":"Front";
+            textR.innerText = reverse?"Front":"Rear";
+            textF.style.color = reverse?"#CC0000":"#000000";
+            textR.style.color = reverse?"#CC0000":"#000000";
+            textF.style.fontWeight = reverse?"bold":"normal";
+            textR.style.fontWeight = reverse?"bold":"normal";
+        }
+    </script>
+    <style type="text/css">
+    <!--
+    .stick{
+        position: absolute;
+        left: calc(50% - 80vmin/2);
+        top: calc(60% - 80vmin/2);
+        width: 80vmin;
+        height: 80vmin;
+        left: calc(50% - 80dvmin/2);
+        top: calc(60% - 80dvmin/2);
+        width: 80dvmin;
+        height: 80dvmin;
+        border: 2px solid #232323;
+        border-radius: 50%;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .stick-init{
+        position: absolute;
+        left: calc(50% - 16vmin/2);
+        top: calc(60% - 16vmin/2);
+        width: 16vmin;
+        height: 16vmin;
+        left: calc(50% - 16dvmin/2);
+        top: calc(60% - 16dvmin/2);
+        width: 16dvmin;
+        height: 16dvmin;
+        border: 2px solid #232323;
+        border-radius: 50%;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .add-button{
+        visibility: hidden;
+        position: absolute;
+        top: calc(20%);
+        width: 20vmin;
+        height: 20vmin;
+        width: 20dvmin;
+        height: 20dvmin;
+        cursor: pointer;
+        border: 2px solid #232323;
+        border-radius: 50%;
+        box-sizing: border-box;
+        font-size: 4vmin;
+        font-size: 4dvmin;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .add-button:active { background-color: #FFF100; }
+    .add-text{
+        visibility: hidden;
+        white-space: nowrap;
+        position: absolute;
+        font-size: 4vmin;
+        font-size: 4dvmin;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    -->
+    </style>
+</head>
+<body class="content" onload="load();tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:12%;font-size:6vmin;font-size:6dvmin;">
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_0');" id="m0"><span class="text">0</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_1');" id="m1"><span class="text">1</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_2');" id="m2"><span class="text">2</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_3');" id="m3"><span class="text">3</span></div>
+    <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_4');" id="m4"><span class="text">4</span></div>
+</div>
+<canvas id="control" class="stick"></canvas>
+<canvas id="control_init" class="stick-init"></canvas>
+<div class="add-button" id="button_normal" style="left:calc(0%);" onclick="revFunc(false);"><span class="text">Normal</span></div>
+<div class="add-button" id="button_reverse" style="left:calc(100% - 20vmin);left:calc(100% - 20dvmin);" onclick="revFunc(true);"><span class="text">Reverse</span></div>
+<span class="add-text" id="text_front" style="top: calc(60% - 40vmin + 3vmin); top: calc(60% - 40dvmin + 3dvmin); left: calc(50%);"><span class="text" id="textF">Front</span></span>
+<span class="add-text" id="text_rear" style="top: calc(60% + 40vmin - 3vmin); top: calc(60% + 40dvmin - 3dvmin); left: calc(50%);"><span class="text" id="textR">Rear</span></span>
+<span class="add-text" id="text_left" style="top: calc(60%); left: calc(50% - 40vmin + 3vmin); left: calc(50% - 40dvmin + 3dvmin); transform:rotate(-90deg);"><span class="text">Left</span></span>
+<span class="add-text" id="text_right" style="top: calc(60%); left: calc(50% + 40vmin - 3vmin); left: calc(50% + 40dvmin - 3dvmin); transform:rotate(+90deg);"><span class="text">Right</span></span>
+
+<script>
+var stick = false, v_per = 0, w_per = 0;
+window.addEventListener("resize", reset);
+window.addEventListener("orientationchange", reset);
+window.addEventListener("beforeunload", reset);
+var control = document.getElementById("control");
+var control_init = document.getElementById("control_init");
+
+var changedApplication = 100000;
+var stopCount = 100000;
+setInterval("send()", 50);
+function send(){
+    if(time && new Date().getTime() - time.getTime() > 5000) reset();
+    if(changedApplication < 0) ++changedApplication;
+    if(stick){
+        if(stopCount > 40 && changedApplication > 0){
+            publishCmd('');
+            changedApplication = -20; //1sec
+        }
+        stopCount = 0;
+        if(v_per*v_per + w_per*w_per > 0.1*0.1){
+            publishVW_per(reverse?-v_per:v_per, w_per);
+        }else{
+            publishVW_per(0, 0);
+        }
+    }else{
+        ++stopCount;
+        if(stopCount <= 40) publishVW_per(0, 0); //2sec
+        if(stopCount == 40) control_init.style.backgroundColor = "#FFFFFF";
+    }
+}
+
+function reset(){
+    if(time && new Date().getTime() - time.getTime() > 5000){
+        time = null;
+        document.getElementById("m0").style.backgroundColor = "#AFAFAF";
+        document.getElementById("m1").style.backgroundColor = "#AFAFAF";
+        document.getElementById("m2").style.backgroundColor = "#AFAFAF";
+        document.getElementById("m3").style.backgroundColor = "#AFAFAF";
+        document.getElementById("m4").style.backgroundColor = "#AFAFAF";
+    }
+    control_init.style.top = (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2 - control_init.getBoundingClientRect().height/2) + 'px';
+    control_init.style.left = (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2 - control_init.getBoundingClientRect().width/2) + 'px';
+    if(stick){
+        beep();
+        publishVW_per(0, 0);
+    }
+    stick = false;
+    v_per = w_per = 0;
+}
+
+
+window.addEventListener("touchend", reset);
+window.addEventListener("touchcancel", reset);
+control_init.addEventListener("touchstart", touch_monitor);
+control_init.addEventListener("touchmove", touch_monitor);
+function touch_monitor(e) {
+    e.preventDefault();
+    if(e.touches.length == 1){
+        time = new Date();
+        var x = e.touches[0].clientX;
+        var y = e.touches[0].clientY;
+        //document.title = x + " " + y;
+        var v2_per = -(y - (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2)) / (control.getBoundingClientRect().height/2);
+        var w2_per = -(x - (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2)) / (control.getBoundingClientRect().width/2);
+        if(v2_per*v2_per + w2_per*w2_per > 1){
+            var ratio = 1 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+            v2_per = v2_per * ratio;
+            w2_per = w2_per * ratio;
+        }
+        v_per = v2_per;
+        w_per = w2_per;
+        if(stick == false && Math.abs(v_per) < 0.2 && Math.abs(w_per) < 0.2){
+            stick = true;
+            beep();
+        }
+        if(stick){
+            if(v2_per*v2_per + w2_per*w2_per > 0.8*0.8){
+                var ratio = 0.8 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+                v2_per = v2_per * ratio;
+                w2_per = w2_per * ratio;
+            }
+            x = -w2_per * (control.getBoundingClientRect().width/2) + (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2);
+            y = -v2_per * (control.getBoundingClientRect().height/2) + (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2);
+            control_init.style.backgroundColor = "#FFF100";
+            control_init.style.top = (y - control_init.getBoundingClientRect().height/2) + 'px';
+            control_init.style.left = (x - control_init.getBoundingClientRect().width/2) + 'px';
+        }else{
+            reset();
+        }
+    }else{
+        reset();
+    }
+}
+
+var gamepad_connectIndex = null;
+var gamepad_loopID = null;
+var gamepad_beep = false;
+addEventListener("gamepadconnected", function(e){
+    gamepad_connectIndex = e.gamepad.index;
+    gamepad_loopID = requestAnimationFrame(gamepad_loop);
+});
+addEventListener("gamepaddisconnected", function(e){
+    cancelAnimationFrame(gamepad_loopID);
+    gamepad_connectIndex = null;
+    reset();
+});
+function gamepad_loop(){
+    time = new Date();
+    var pad = navigator.getGamepads()[gamepad_connectIndex];
+    var len_01 = pad.axes[0]*pad.axes[0] + pad.axes[1]*pad.axes[1];
+    var len_23 = pad.axes[2]*pad.axes[2] + pad.axes[3]*pad.axes[3];
+    var v2_per = (len_01 > len_23)?-pad.axes[1]:-pad.axes[3];
+    var w2_per = (len_01 > len_23)?-pad.axes[0]:-pad.axes[2];
+    if(pad.buttons[12].pressed && !pad.buttons[13].pressed) v2_per = +1;
+    if(!pad.buttons[12].pressed && pad.buttons[13].pressed) v2_per = -1;
+    if(pad.buttons[14].pressed && !pad.buttons[15].pressed) w2_per = +1;
+    if(!pad.buttons[14].pressed && pad.buttons[15].pressed) w2_per = -1;
+    if(v2_per*v2_per + w2_per*w2_per > 1){
+        var ratio = 1 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+        v2_per = v2_per * ratio;
+        w2_per = w2_per * ratio;
+    }
+    v_per = v2_per;
+    w_per = w2_per;
+    if(v2_per*v2_per + w2_per*w2_per > 0.8*0.8){
+        var ratio = 0.8 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+        v2_per = v2_per * ratio;
+        w2_per = w2_per * ratio;
+    }
+    x = -w2_per * (control.getBoundingClientRect().width/2) + (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2);
+    y = -v2_per * (control.getBoundingClientRect().height/2) + (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2);
+    control_init.style.backgroundColor = "#00FF00"; //GREEN
+    control_init.style.top = (y - control_init.getBoundingClientRect().height/2) + 'px';
+    control_init.style.left = (x - control_init.getBoundingClientRect().width/2) + 'px';
+
+    stick = true;
+    if(v_per*v_per + w_per*w_per > 0.1*0.1){
+        if(gamepad_beep == false){ beep(); gamepad_beep = true; }
+    }else{
+        if(gamepad_beep == true){ beep(); gamepad_beep = false; }
+    }
+    
+    requestAnimationFrame(gamepad_loop);
+}
+
+
+window.addEventListener("mouseup", reset);
+document.body.addEventListener("mouseleave", reset);
+window.addEventListener("mousedown", mousedown);
+window.addEventListener("mousemove", mousemove);
+function mousedown(e) {
+    time = new Date();
+    var x = e.clientX;
+    var y = e.clientY;
+    var v2_per = -(y - (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2)) / (control.getBoundingClientRect().height/2);
+    var w2_per = -(x - (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2)) / (control.getBoundingClientRect().width/2);
+    if(v2_per*v2_per + w2_per*w2_per > 1){
+        var ratio = 1 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+        v2_per = v2_per * ratio;
+        w2_per = w2_per * ratio;
+    }
+    v_per = v2_per;
+    w_per = w2_per;
+    if(stick == false && Math.abs(v_per) < 0.2 && Math.abs(w_per) < 0.2){
+        stick = true;
+        beep();
+    }
+}
+function mouseup(e) {
+    reset();
+}
+function mousemove(e) {
+    time = new Date();
+    var x = e.clientX;
+    var y = e.clientY;
+    var v2_per = -(y - (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2)) / (control.getBoundingClientRect().height/2);
+    var w2_per = -(x - (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2)) / (control.getBoundingClientRect().width/2);
+    if(v2_per*v2_per + w2_per*w2_per > 1){
+        var ratio = 1 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+        v2_per = v2_per * ratio;
+        w2_per = w2_per * ratio;
+    }
+    v_per = v2_per;
+    w_per = w2_per;
+    if(stick){
+        if(v2_per*v2_per + w2_per*w2_per > 0.8*0.8){
+            var ratio = 0.8 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+            v2_per = v2_per * ratio;
+            w2_per = w2_per * ratio;
+        }
+        x = -w2_per * (control.getBoundingClientRect().width/2) + (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2);
+        y = -v2_per * (control.getBoundingClientRect().height/2) + (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2);
+        control_init.style.backgroundColor = "#FFF100";
+        control_init.style.top = (y - control_init.getBoundingClientRect().height/2) + 'px';
+        control_init.style.left = (x - control_init.getBoundingClientRect().width/2) + 'px';
+    }else{
+        reset();
+    }
+}
+
+
+var key_aup = false, key_adown = false, key_aleft = false, key_aright = false;
+document.addEventListener("keydown", function(e){
+    time = new Date();
+    if(e.key == "ArrowUp") key_aup = true;
+    if(e.key == "ArrowDown") key_adown = true;
+    if(e.key == "ArrowLeft") key_aleft = true;
+    if(e.key == "ArrowRight") key_aright = true;
+});
+document.addEventListener("keyup", function(e){
+    if(e.key == "ArrowUp") key_aup = false;
+    if(e.key == "ArrowDown") key_adown = false;
+    if(e.key == "ArrowLeft") key_aleft = false;
+    if(e.key == "ArrowRight") key_aright = false;
+    if(!key_aup && !key_adown && !key_aleft && !key_aright && stick) reset();
+});
+setInterval("key()", 50);
+function key(){
+    if(key_aup || key_adown || key_aleft || key_aright){
+        var v2_per = (key_aup?1:0) + (key_adown?-1:0);
+        var w2_per = (key_aleft?1:0) + (key_aright?-1:0);
+        if(stick == false && (v2_per != 0 || w2_per != 0)){
+            stick = true;
+            beep();
+        }
+        if(v2_per*v2_per + w2_per*w2_per > 1){
+            var ratio = 1 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+            v2_per = v2_per * ratio;
+            w2_per = w2_per * ratio;
+        }
+        v_per = v2_per;
+        w_per = w2_per;
+        if(v2_per*v2_per + w2_per*w2_per > 0.8*0.8){
+            var ratio = 0.8 / Math.sqrt(v2_per*v2_per + w2_per*w2_per);
+            v2_per = v2_per * ratio;
+            w2_per = w2_per * ratio;
+        }
+        x = -w2_per * (control.getBoundingClientRect().width/2) + (control.getBoundingClientRect().left+control.getBoundingClientRect().width/2);
+        y = -v2_per * (control.getBoundingClientRect().height/2) + (control.getBoundingClientRect().top+control.getBoundingClientRect().height/2);
+        control_init.style.backgroundColor = "#FFF100";
+        control_init.style.top = (y - control_init.getBoundingClientRect().height/2) + 'px';
+        control_init.style.left = (x - control_init.getBoundingClientRect().width/2) + 'px';
+    }
+}
+
+</script>
+</body>
+</html>

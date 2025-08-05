@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        var last_mark = "---";
+        function onConnected(){
+            subscribe("0/THOUZER_HW/" + type_and_serial + "/event/app");
+            subscribe("0/THOUZER_HW/" + type_and_serial + "/indicator/app");
+            subscribe("0/WHISPERER/" + type_and_serial + "/app_status");
+            dest_t_update("---", "---");
+        }
+        function checkParse(field){
+            return (field != null?field:"null");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/THOUZER_HW/" + type_and_serial + "/event/app"){
+                if(json.data != null && json.data.application != null && json.data.application == "highway" && json.data.data != null && json.data.data.mark != null){
+                    var score = checkParse(json.data.data.mark.score);
+                    var code = checkParse(json.data.data.mark.code);
+                    var name = checkParse(json.data.data.mark.name);
+                    var badmark = checkParse(json.data.event) == "badMark";
+                    document.getElementById("details").innerHTML = "<span style=\"font-size:150%;font-weight:bold;background-color:" + (badmark || score < 50?"#FF4040":score >= 60?"#80FF80":"#FFFF80") + "\">code: " + code + ", score: " + score + "</span><br><span style=\"font-size:250%;font-weight:bold;\">" + name + "</span><br><br>" + json_text + "<hr>" + document.getElementById("details").innerHTML;
+                }
+                if(json.data != null && json.data.application != null && json.data.application == "linetrace" && json.data.status != null){
+                    document.getElementById("appStatus").innerText = json.data.status;
+                    if(json.data.data != null){
+                        document.getElementById("i_s").innerText = json.data.data.intensity_small;
+                        document.getElementById("i_l").innerText = json.data.data.intensity_large;
+                        document.getElementById("c_s").innerText = json.data.data.center_small;
+                        document.getElementById("c_l").innerText = json.data.data.center_large;
+                        document.getElementById("w_s").innerText = json.data.data.width_small;
+                        document.getElementById("w_l").innerText = json.data.data.width_large;
+                        var i_i = document.getElementById("i_i"); if(i_i.innerText == "-" || Number(i_i.innerText) > json.data.data.intensity_small) i_i.innerText = json.data.data.intensity_small;
+                        var i_a = document.getElementById("i_a"); if(i_a.innerText == "-" || Number(i_a.innerText) < json.data.data.intensity_large) i_a.innerText = json.data.data.intensity_large;
+                        var c_i = document.getElementById("c_i"); if(c_i.innerText == "-" || Number(c_i.innerText) > json.data.data.center_small) c_i.innerText = json.data.data.center_small;
+                        var c_a = document.getElementById("c_a"); if(c_a.innerText == "-" || Number(c_a.innerText) < json.data.data.center_large) c_a.innerText = json.data.data.center_large;
+                        var w_i = document.getElementById("w_i"); if(w_i.innerText == "-" || Number(w_i.innerText) > json.data.data.width_small) w_i.innerText = json.data.data.width_small;
+                        var w_a = document.getElementById("w_a"); if(w_a.innerText == "-" || Number(w_a.innerText) < json.data.data.width_large) w_a.innerText = json.data.data.width_large;
+                    }else{
+                        document.getElementById("i_s").innerText = "-";
+                        document.getElementById("i_l").innerText = "-";
+                        document.getElementById("c_s").innerText = "-";
+                        document.getElementById("c_l").innerText = "-";
+                        document.getElementById("w_s").innerText = "-";
+                        document.getElementById("w_l").innerText = "-";
+                    }
+                }
+            }
+            if(topic == "0/THOUZER_HW/" + type_and_serial + "/indicator/app" && json.data != null && json.data.type != null){
+                var text = json.data.type;
+                if(json.data.id != null || json.data.number != null) text += " ";
+                if(json.data.id != null) text += "(id=" + json.data.id + ")";
+                if(json.data.number != null) text += "(r=" + json.data.number + ")";
+                document.getElementById("details").innerHTML = "<span style=\"font-weight:bold;background-color:" + (text.indexOf("error[")==0?"#FF3030":text.indexOf("alert:")==0?"#FF7070":text.indexOf("alarm:")==0?"#FFC0C0":"#FFFF7F") + ";\">" + text + "</span><hr>" + document.getElementById("details").innerHTML;
+            }
+            if(topic == "0/THOUZER_HW/" + type_and_serial + "/event/app" && json.data != null && json.data.application != null && json.data.application == "highway" && json.data.data != null){
+                if(json.data.event != null && json.data.event != "badMark" && json.data.data.mark != null && json.data.data.mark.name != null) last_mark = json.data.data.mark.name;
+                if(json.data.data.destination != null) dest_t_update(json.data.data.destination, last_mark);
+            }
+            if(topic == "0/WHISPERER/" + type_and_serial + "/app_status" && json.app != null){
+                if(json.app.indexOf("./bin/app-linetrace") != 0){
+                    last_mark = "---";
+                    document.getElementById("dest_t").style.display = 'none';
+                    document.getElementById("dest").style.display = 'block';
+                    document.getElementById("select").style.display = 'block';
+                }else{
+                    document.getElementById("dest").style.display = 'none';
+                    document.getElementById("select").style.display = 'none';
+                    document.getElementById("dest_t").style.display = 'block';
+                }
+            }
+        }
+        function select(){
+            var sel = document.getElementById("select");
+            if(sel.value != ""){
+                document.getElementById("dest").value = sel.value;
+                sel.options[0].selected = true;
+            }
+        }
+        function go(){
+            if(document.getElementById("dest").value != ""){
+                publishHW(document.getElementById("dest").value);
+                dest_t_update("---", "---");
+            }
+        }
+        function reset(){
+            document.getElementById("details").innerHTML = "<br><b>*** Details of Indicator and Highway ***</b><br><br>Please check score by barcode marker.<br>It is an ERROR if the score less than 50.<br>Check the score higher than 60.";
+            document.getElementById("appStatus").innerText = "";
+            document.getElementById("i_i").innerText = "-";
+            document.getElementById("i_s").innerText = "-";
+            document.getElementById("i_l").innerText = "-";
+            document.getElementById("i_a").innerText = "-";
+            document.getElementById("c_i").innerText = "-";
+            document.getElementById("c_s").innerText = "-";
+            document.getElementById("c_l").innerText = "-";
+            document.getElementById("c_a").innerText = "-";
+            document.getElementById("w_i").innerText = "-";
+            document.getElementById("w_s").innerText = "-";
+            document.getElementById("w_l").innerText = "-";
+            document.getElementById("w_a").innerText = "-";
+        }
+        function dest_t_update(d, l){
+            document.getElementById("dest_t").innerHTML = "<div style='height:100%;width:100%;float:left;position:relative;'><span class='text'>dest : " + d + " / last : " + l + "</span></div>";
+        }
+    </script>
+</head>
+<body class="content" onload="reset();tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+
+<input id="dest" type="text" style="height:12%;font-size:8vmin;font-size:8dvmin;width:calc(100% - 75px);box-sizing:border-box;float:left;text-align:center;" value="9000">
+<select style="height:12%;font-size:6vmin;font-size:6dvmin;width:40px;box-sizing:border-box;float:left;" id="select" onChange="select();">
+  <option value=""></option>
+
+  <option value="100">100</option><option value="101">101</option><option value="102">102</option><option value="103">103</option>
+  <option value="104">104</option><option value="105">105</option><option value="106">106</option><option value="107">107</option>
+
+  <option value="200">200</option><option value="201">201</option><option value="202">202</option><option value="203">203</option>
+  <option value="204">204</option><option value="205">205</option><option value="206">206</option><option value="207">207</option>
+
+  <option value="300">300</option><option value="301">301</option><option value="302">302</option><option value="303">303</option>
+  <option value="304">304</option><option value="305">305</option><option value="306">306</option><option value="307">307</option>
+
+  <option value="400">400</option><option value="401">401</option><option value="402">402</option><option value="403">403</option>
+  <option value="404">404</option><option value="405">405</option><option value="406">406</option><option value="407">407</option>
+
+  <option value="500">500</option><option value="501">501</option><option value="502">502</option><option value="503">503</option>
+  <option value="504">504</option><option value="505">505</option><option value="506">506</option><option value="507">507</option>
+
+  <option value="600">600</option><option value="601">601</option><option value="602">602</option><option value="603">603</option>
+  <option value="604">604</option><option value="605">605</option><option value="606">606</option><option value="607">607</option>
+
+  <option value="000">000</option><option value="001">001</option><option value="002">002</option><option value="003">003</option>
+  <option value="004">004</option><option value="005">005</option><option value="006">006</option><option value="007">007</option>
+</select>
+<div class="area" style="height:12%;font-size:6vmin;font-size:6dvmin;display:none;" id="dest_t"></div>
+
+<div class="area" style="width:30%;height:8%;font-size:6vmin;font-size:6dvmin;"><div class="button" onclick="publishCmd('')"><span class="text">Stop</span></div></div>
+<div class="area" style="width:30%;height:8%;font-size:6vmin;font-size:6dvmin;"><div class="button" onclick="go()"><span class="text">Go</span></div></div>
+<div class="area" style="width:40%;height:8%;font-size:6vmin;font-size:6dvmin;"><div class="button" onclick="reset()"><span class="text">Reset</span></div></div>
+<div class="area" style="width:100%;height:30%;font-size:4vmin;font-size:4dvmin;">
+
+<table border="1" cellspacing="0" style="padding:0px;width:100%;height:100%;" width="100%" height="100%">
+  <tr>
+    <th style="width:32%;color:#004400;background-color:#eeeeee" id="appStatus"></th>
+    <th style="width:17%;">Min</th>
+    <th style="width:17%;">Small</th>
+    <th style="width:17%;">Large</th>
+    <th style="width:17%;">Max</th>
+  </tr>
+  <tr>
+    <td><b>Intensity</b></td>
+    <td style="text-align:center" id="i_i"></td>
+    <td style="text-align:center" id="i_s"></td>
+    <td style="text-align:center" id="i_l"></td>
+    <td style="text-align:center" id="i_a"></td>
+  </tr>
+  <tr>
+    <td><b>Center[mm]</b></td>
+    <td style="text-align:center" id="c_i"></td>
+    <td style="text-align:center" id="c_s"></td>
+    <td style="text-align:center" id="c_l"></td>
+    <td style="text-align:center" id="c_a"></td>
+  </tr>
+  <tr>
+    <td><b>Width[mm]</b></td>
+    <td style="text-align:center" id="w_i"></td>
+    <td style="text-align:center" id="w_s"></td>
+    <td style="text-align:center" id="w_l"></td>
+    <td style="text-align:center" id="w_a"></td>
+  </tr>
+</table>
+
+</div>
+<div id="details" style="overflow-y:scroll;font-size:4vmin;font-size:4dvmin;width:100%;height:42%;"></div>
+</body>
+</html>

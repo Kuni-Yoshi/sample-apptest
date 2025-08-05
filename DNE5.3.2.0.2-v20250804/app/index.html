@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <title>Sample Applications</title>
+    <script>
+        var boxBase = "auto:" + type_and_serial;
+        function load(){
+            if(document.location.search.length > 1){
+                var array = document.location.search.substring(1).split('&');
+                var re = /^[A-Z]\w*-\w+-\w+$/;
+                for(var str of array) if(re.test(str)){
+                    boxBase = type_and_serial = str;
+                    document.getElementById("check").disabled = true;
+                    document.getElementById("check").value = "--";
+                }
+            }
+            var opt = document.createElement("option");
+            opt.value = boxBase;
+            opt.textContent = boxBase;
+            document.getElementById("select").appendChild(opt);
+            setTimeout(firstSelect, 10);
+
+            var cookie_num = (document.cookie == "")?0:document.cookie.split(";").length;
+            document.getElementById("cookieDelBtn").textContent = "Delete " + cookie_num + " Cookies";
+        }
+        function firstSelect(){
+            document.getElementById("select").options[0].selected = true;
+            select();
+        }
+        function check(){
+            document.getElementById("check").disabled = true;
+            document.getElementById("check").value = "--";
+            var sel = document.getElementById("select");
+            while(sel.hasChildNodes() && sel.childNodes.length > 0) sel.removeChild(sel.firstChild);
+            client_retry = true;
+            tryConnectFirst();
+        }
+        function onConnected(){
+            beep();
+            subscribe("0/WHISPERER/+/#");
+        }
+        function subscribeParsed(topic, json){
+            if(topic.substr(0, 12) != "0/WHISPERER/") return;
+            var serial = topic.substr(12);
+            var pos = serial.indexOf("/");
+            if(pos > 0) serial = serial.substr(0, pos);
+            var sel = document.getElementById("select");
+            for(var index = 0; index < sel.childNodes.length; index++){
+                var opt = sel.childNodes[index];
+                if(serial == opt.textContent) return;
+            }
+            var newOpt = document.createElement("option");
+            newOpt.value = serial;
+            newOpt.textContent = serial;
+            sel.appendChild(newOpt);
+            var cnt = (sel.hasChildNodes() && sel.childNodes.length > 0?sel.childNodes.length:"0");
+            document.getElementById("check").value = cnt;
+            document.getElementById("check").style.backgroundColor = "while";
+            document.getElementById("check").style.border = "solid 1px black";
+            document.getElementById("check").style.color = "black";
+            if(cnt == 1){
+                sel.options[0].selected = true;
+                select();
+            }
+        }
+        function select(){
+            var sel = document.getElementById("select");
+            var number = (sel.value.length == 0 || sel.value.substr(0, 5) == "auto:")?"":sel.value;
+            var links = document.getElementsByClassName("app");
+            var query = (document.location.search.length > 1)?document.location.search.substr(1).replace("?", ""):"";
+            for(var index = 0; index < links.length; index++){
+                var link = links[index];
+                var oldHref = link.getAttribute("href");
+                var add = "";
+                if(link.getAttribute("arg") != undefined) add = "?" + link.getAttribute("arg");
+                if(boxBase.substr(0, 5) == "auto:" && number != "") add += (add == ""?"?":"&") + number;
+                if(query != "") add += (add == ""?"?":"&") + query;
+                link.setAttribute("href", (oldHref.indexOf("?") >= 0)?oldHref.replace(/\?.*/, add):(oldHref + add));
+            }
+        }
+
+        function deleteCookie(){
+            var path = window.location.pathname
+            var paths = [];
+            while (path) {
+                path = path.substring(0, path.lastIndexOf("/"));
+                paths.push(path ? path : "/");
+            }
+            var cookies = document.cookie.split(";");
+            for(var i=0; i<cookies.length; i++){
+                var name = cookies[i].substr(0, cookies[i].indexOf("=")).trim();
+                for (var j=0; j<paths.length; j++) {
+                    document.cookie = name + "=;max-age=0;path=" + paths[j];
+                }
+            }
+            document.getElementById("cookieDelText").textContent = "Cookie deleted. Please reload.";
+        }
+    </script>
+</head>
+<body onload="load();">
+<h1><b>Sample Applications</b></h1>
+<hr>
+<a href="readme-check.html">If you can NOT use samples, please check this.</a><br>
+<hr>
+<div style="font-size:120%;margin-bottom:5px;"><b>Check connection / Select robot</b></div>
+<input style="height:30px;width:80px;font-size:120%;" type="button" id="check" value="do" onclick="check();"> <select id="select" size="1" style="font-size:120%;width:240px;" onChange="select();"></select><br>
+<hr>
+<h2><b><a class="app" href="app-userInput-stick.html">Stick-Control</a></b></h2>
+<h2><b><a class="app" href="app-karugamo.html">Follow-Me</a></b></h2>
+<h2><b><a class="app" href="app-memorytrace-simple.html">MemoryTrace-Simple-Button</a></b></h2>
+<h2><b><a class="app" href="app-memorytrace-multi.html">MemoryTrace-Multi-Button</a></b></h2>
+<h2><b><a class="app" href="app-linetrace-simple.html">Highway-Simple-Button</a></b></h2>
+<h2><b><a class="app" href="app-linetrace-multi.html">Highway-Multi-Button</a></b></h2>
+<h2><b><a class="app" href="app-combination-simple.html">Combination-Simple-Button</a></b></h2>
+<hr>
+<h2><b><a class="app" href="app-userInput-stick.html" arg="advanced">Advanced-Stick-Control</a></b></h2>
+<h2><b><a class="app" href="advanced-memorytrace.html">Advanced-MemoryTrace</a></b></h2>
+<h2><b><a class="app" href="advanced-linetrace.html">Advanced-LineTrace</a></b></h2>
+<h2><b><a class="app" href="check-battery.html">Battery-gauge</a></b></h2>
+<h2><b><a class="app" href="check-status345.html">Indicator-3-Light</a></b></h2>
+<h2><b><a class="app" href="check-ext01.html">Extension-2-IO</a></b></h2>
+<h2><b><a class="app" href="check-io12pin.html">Check-IO12</a></b></h2>
+<hr>
+<h2><b><a class="app" href="test-command.html">Test-Command</a></b></h2>
+<h2><b><a class="app" href="test-dump.html">Test-Dump</a></b></h2>
+<h2><b><a class="app" href="test-logging.html">Test-Logging</a></b></h2>
+<hr>
+<button id="cookieDelBtn" type="button" onclick="deleteCookie()"></button>
+<div id=cookieDelText></div>
+<hr>
+<a href="../">Home</a><br>
+</body>
+</html>

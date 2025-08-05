@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){ }
+        function init(){
+            document.getElementById("command").value = "#speedmode_3";
+        }
+        function send(){
+            publishCmdParam(document.getElementById("command").value, document.getElementById("param").value);
+            document.getElementById("message").innerHTML = document.getElementById("command").value + (document.getElementById("param").value == ""?"":"<br>" + document.getElementById("param").value) + "<hr>" + document.getElementById("message").innerHTML;
+        }
+    </script>
+</head>
+<body style="height:100%;width:100%;margin:0;" onload="tryConnectFirst();init();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<span style="display:inline-block;width:80px;font-size:15px;">app:</span><input id="command" type="text" style="height:40px;font-size:15px;width: calc(100% - 80px);box-sizing:border-box;">
+<span style="display:inline-block;width:80px;font-size:15px;">params:</span><input id="param" type="text" style="height:40px;font-size:15px;width: calc(100% - 80px);box-sizing:border-box;">
+<input style="height:30px;font-size:20px;width:100%;box-sizing:border-box;" type="button" id="send" value="send to exec/cmd" onclick="send();">
+<div id="message" style="overflow-y:scroll;font-size:4vmin;font-size:4dvmin;width:100%;"></div>
+</body>
+</html>

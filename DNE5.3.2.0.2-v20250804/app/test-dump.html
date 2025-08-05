@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            if(retry != "") subscribe(retry);
+	}
+
+        var visibleVersion = false;
+        var defaultMessage = 'Please push button.<br><br>INVISIBLE default subscribed topic.<br> 0/WHISPERER/+/version <input id="visible" type="checkbox">visible</check>';
+        var retry = "";
+        function init(){
+            document.getElementById("message").innerHTML = defaultMessage;
+            document.getElementById("topic").value = "0/THOUZER_HW/" + type_and_serial + "/#";
+        }
+        function set(){
+            if(document.getElementById("set").value == "set"){
+                document.getElementById("set").value = "stop";
+                visibleVersion = document.getElementById("visible").checked;
+                document.getElementById("message").innerHTML = "Please wait.";
+                subscribe(retry = document.getElementById("topic").value);
+            }else{
+                retry = "";
+                document.getElementById("set").value = "set";
+                visibleVersion = false;
+                document.getElementById("message").innerHTML = defaultMessage + '<hr><div style="color:#FF0000">*** stop ***</div><hr>' + document.getElementById("message").innerHTML;
+                unsubscribe(document.getElementById("topic").value);
+            }
+        }
+        function subscribeParse(message){
+            const topic = message.destinationName;
+            const json_text = message.payloadString;
+            if(visibleVersion == false && message.destinationName.match(new RegExp("0/WHISPERER/.+/version")) != null) return;
+            document.getElementById("message").innerHTML = topic + "<br><br>" + json_text + "<hr>" + document.getElementById("message").innerHTML;
+        }
+    </script>
+</head>
+<body style="height:100%;width:100%;margin:0;" onload="tryConnectFirst();init();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<input id="topic" type="text" style="height:40px;font-size:15px;width:calc(100% - 80px);box-sizing:border-box;"><input style="height:40px;font-size:20px;width:80px;box-sizing:border-box;" type="button" id="set" value="set" onclick="set();">
+<div id="message" style="overflow-y:scroll;font-size:4vmin;font-size:4dvmin;width:100%;"></div>
+</body>
+</html>

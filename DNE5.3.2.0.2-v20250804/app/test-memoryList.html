@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        var mapListTopic = "0/THOUZER_HW/" + type_and_serial + "/map/list";
+        function onConnected(){
+            subscribe(mapListTopic);
+        }
+        function subscribeParsed(topic, json){
+            if (topic == mapListTopic) {
+                document.getElementById("list").innerText = JSON.stringify(json);
+            }
+        }
+        function memory_delete() {
+            var map = document.getElementById("map").value;
+            publishCmdParam("memory-delete", "--map " + map);
+        }
+    </script>
+</head>
+<body onload="tryConnectFirst()">
+<input type="button" value="#memoryList" onclick="publishCmd('#memoryList')">
+<div id="list">(list)</div>
+<br>
+<input type="button" value="memory-delete" onclick="memory_delete()">
+<input id="map" type="text" value="IO76">
+</body>
+</html>

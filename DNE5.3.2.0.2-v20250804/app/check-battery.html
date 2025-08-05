@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/battery");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/battery" && json.gauge != null){
+                var gauge = Number(json.gauge);
+                document.getElementById("BA10").style.backgroundColor = (gauge >= 10)?"#00FF00":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA9").style.backgroundColor = (gauge >= 9)?"#00FF00":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA8").style.backgroundColor = (gauge >= 8)?"#00FF00":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA7").style.backgroundColor = (gauge >= 7)?"#FFD700":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA6").style.backgroundColor = (gauge >= 6)?"#FFD700":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA5").style.backgroundColor = (gauge >= 5)?"#FFD700":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA4").style.backgroundColor = (gauge >= 4)?"#FFD700":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA3").style.backgroundColor = (gauge >= 3)?"#FF0000":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA2").style.backgroundColor = (gauge >= 2)?"#FF0000":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                document.getElementById("BA1").style.backgroundColor = (gauge >= 1)?"#FF0000":(gauge != 0)?"#FFFFFF":"#7F7F7F";
+                if(gauge == 0 && json.voltage_v != null){
+                    document.getElementById("BA10").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA9").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA8").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA7").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA6").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA5").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA4").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA3").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA2").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                    document.getElementById("BA1").innerHTML = '<span class="text">' + json.voltage_v + '[V]</span>';
+                }
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA10"><span class="text">10_GREEN</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA9"><span class="text">9_GREEN</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA8"><span class="text">8_GREEN</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA7"><span class="text">7_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA6"><span class="text">6_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA5"><span class="text">5_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA4"><span class="text">4_YELLOW</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA3"><span class="text">3_RED</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA2"><span class="text">2_RED</span></div>
+<div class="area" style="height:9%;font-size:5vmin;font-size:5dvmin;position:relative;border:2px solid #232323;" id="BA1"><span class="text">1_RED</span></div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;margin:0;touch-action:none;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="../fixed_info.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="../paho-mqtt-min.js"></script>
+    <script type="text/javascript" src="../client_dne_lib.js"></script>
+    <link rel="stylesheet" href="../default.css">
+    <title>Connecting...</title>
+    <script>
+        function onConnected(){
+            subscribe("0/WHISPERER/" + type_and_serial + "/app_status");
+        }
+        function subscribeParsed(topic, json){
+            if(topic == "0/WHISPERER/" + type_and_serial + "/app_status" && json.MT_resume != null && json.app != null && json.MT_teach != null){
+                if(json.app.indexOf("./bin/app-memorytrace") == 0){
+                    document.getElementById("memorize_t").innerText = "Stop and Cancel";
+                    document.getElementById("play_t").innerText = "Playback Stop";
+                    document.getElementById("loop_t").innerText = "Playback Stop";
+                }else{
+                    document.getElementById("memorize_t").innerText = "Select Memorize";
+                    document.getElementById("play_t").innerText = "Select Play";
+                    document.getElementById("loop_t").innerText = "Select Loop";
+                }
+                if(json.MT_teach) document.getElementById("memorize_t").innerText = "Memorize Save";
+                if(json.MT_resume){
+                    document.getElementById("memorize_t").innerText = "Cancel";
+                    document.getElementById("play_t").innerText = "Play Resume";
+                    document.getElementById("loop_t").innerText = "Play Resume";
+                }
+            }
+        }
+        var app = "";
+        var arg_plus = "";
+        function play(){
+            document.getElementById("play").style.backgroundColor = "#FFFF88";
+            document.getElementById("loop").style.backgroundColor = document.getElementById("memorize").style.backgroundColor = "#FFFFFF";
+            app = 'app-memorytrace';
+            arg_plus = '';
+            if(document.getElementById("play_t").innerText.indexOf("Select ") != 0){
+                publishCmdParam((document.getElementById("play_t").innerText.indexOf("Playback Stop") == 0)?"":app, "");
+            }
+        }
+        function loop(){
+            document.getElementById("loop").style.backgroundColor = "#FFFF88";
+            document.getElementById("play").style.backgroundColor = document.getElementById("memorize").style.backgroundColor = "#FFFFFF";
+            app = 'app-memorytrace';
+            arg_plus = ' --loop';
+            if(document.getElementById("loop_t").innerText.indexOf("Select ") != 0){
+                publishCmdParam((document.getElementById("loop_t").innerText.indexOf("Playback Stop") == 0)?"":app, "");
+            }
+        }
+        function memorize(){
+            document.getElementById("memorize").style.backgroundColor = "#FFFF88";
+            document.getElementById("play").style.backgroundColor = document.getElementById("loop").style.backgroundColor = "#FFFFFF";
+            app = 'memory-start-save';
+            arg_plus = '';
+            if(document.getElementById("memorize_t").innerText.indexOf("Select ") != 0){
+                publishCmdParam(app, "");
+                play();
+            }
+        }
+        function send(cmd, param){
+            if(app == 'memory-start-save' && document.getElementById("memorize_t").innerText.indexOf("Select ") != 0) return;
+            if(document.getElementById("play_t").innerText == "Playback Stop"){
+                publishCmdParam("", "");
+            }else{
+                publishCmdParam(cmd, param);
+            }
+        }
+    </script>
+</head>
+<body class="content" onload="tryConnectFirst();play();" ontouchstart="">
+<div id="status" class="area" style="height:8%;font-size:6vmin;font-size:6dvmin;">Connecting...</div>
+
+<div class="area" style="height:9%;font-size:6vmin;font-size:6dvmin;width:100%;"><div class="button" id="memorize" onclick="memorize()"><span class="text" id="memorize_t">Select Memorize</span></div></div>
+<div class="area" style="height:9%;font-size:6vmin;font-size:6dvmin;width:100%;"><div class="button" id="play" onclick="play()"><span class="text" id="play_t">Select Play</span></div></div>
+<div class="area" style="height:9%;font-size:6vmin;font-size:6dvmin;width:100%;"><div class="button" id="loop" onclick="loop()"><span class="text" id="loop_t">Select Loop</span></div></div>
+
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map IO76'+arg_plus)"><span class="text" id="IO76_t">IO76</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B101'+arg_plus)"><span class="text" id="B101_t">B101</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:34%;"><div class="button" onclick="send(app, '--map B102'+arg_plus)"><span class="text" id="B102_t">B102</span></div></div>
+
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B103'+arg_plus)"><span class="text">B103</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B104'+arg_plus)"><span class="text">B104</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:34%;"><div class="button" onclick="send(app, '--map B105'+arg_plus)"><span class="text">B105</span></div></div>
+
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B106'+arg_plus)"><span class="text">B106</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B107'+arg_plus)"><span class="text">B107</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:34%;"><div class="button" onclick="send(app, '--map B201'+arg_plus)"><span class="text">B201</span></div></div>
+
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B202'+arg_plus)"><span class="text">B202</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B203'+arg_plus)"><span class="text">B203</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:34%;"><div class="button" onclick="send(app, '--map B204'+arg_plus)"><span class="text">B204</span></div></div>
+
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B205'+arg_plus)"><span class="text">B205</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:33%;"><div class="button" onclick="send(app, '--map B206'+arg_plus)"><span class="text">B206</span></div></div>
+<div class="area" style="height:13%;font-size:8vmin;font-size:8dvmin;width:34%;"><div class="button" onclick="send(app, '--map B207'+arg_plus)"><span class="text">B207</span></div></div>
+</body>
+</html>
