@@ -169,7 +169,7 @@ function publishCmdParam(cmd, param) {
     if(typeof type_and_serial !== 'undefined'){
         const now = new Date();
         //publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\",\"params\":\"" + param + "\"}");
-        publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\",\"params\":\"" + param + "\",\"comment\":\"" + now.toISOString() + "\"}");
+        publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\",\"params\":\"" + param + "\",\"comment\":\{timestamp\":  " + now.toISOString() + "\}\"}");
         beep();
     }
 }
