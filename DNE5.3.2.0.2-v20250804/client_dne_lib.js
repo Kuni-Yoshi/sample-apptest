@@ -167,13 +167,14 @@ function publishHW(dest) {
 }
 function publishCmdParam(cmd, param) {
     if(typeof type_and_serial !== 'undefined'){
-        publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\",\"params\":\"" + param + "\"}");
+        //publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\",\"params\":\"" + param + "\"}");
+        publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\",\"params\":\"" + param + "\",\"comment\":\"" + param + "\"}");
         beep();
     }
 }
 function publishCmd(cmd) {
     if(typeof type_and_serial !== 'undefined'){
-        publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\"}");
+        publish("0/THOUZER_HW/" + type_and_serial + "/exec/cmd", "{\"app\":\"" + cmd + "\"      }");
         beep();
     }
 }
